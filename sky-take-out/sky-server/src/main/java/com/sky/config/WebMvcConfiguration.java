@@ -85,4 +85,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         //将消息转换器对象添加到转换器集合中
         converters.add(0, converter);
     }
+
+
+
 }
