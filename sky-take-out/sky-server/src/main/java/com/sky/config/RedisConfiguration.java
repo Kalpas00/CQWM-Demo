@@ -1,5 +1,8 @@
 package com.sky.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +21,16 @@ public class RedisConfiguration {
         template.setConnectionFactory(factory);
 
         StringRedisSerializer stringSerializer = new StringRedisSerializer();
+
+        // 创建 Jackson 序列化器
         Jackson2JsonRedisSerializer<Object> jsonSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
+
+        // 创建 ObjectMapper 并注册 Java 8 时间模块
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());  // 关键：注册时间模块
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);  // 可选：使用 ISO 格式而非时间戳
+
+        jsonSerializer.setObjectMapper(objectMapper);  // 关键：设置到序列化器
 
         // Key 用 String（保持可读）
         template.setKeySerializer(stringSerializer);
